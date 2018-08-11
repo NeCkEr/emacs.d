@@ -1,1 +1,6 @@
 .cask/
+auto-save-list/
+configuration.el
+elpa/
+network-security.data
+projectile-bookmarks.eld
