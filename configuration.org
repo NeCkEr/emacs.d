@@ -1,0 +1,152 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: BruNeX
+#+EMAIL: hello@brunex.name
+
+* Set personal information
+
+** Who am I?
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "BruNeX"
+        user-mail-address "hello@brunex.name")
+#+END_SRC
+
+* Configure =use-package=
+
+#+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (setq use-package-verbose t)
+  (setq use-package-always-ensure t)
+
+  (require 'use-package)
+#+END_SRC
+
+
+Always compile packages, and use the newest version available.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-compile
+    :config (auto-compile-on-load-mode))
+  (setq load-prefer-newer t)
+#+END_SRC
+
+* cool defaults
+
+nice scrolling
+#+BEGIN_SRC emacs-lisp
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)
+#+END_SRC
+
+mode line settings
+#+BEGIN_SRC emacs-lisp
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
+#+END_SRC
+
+enable y/n answers
+#+BEGIN_SRC emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+The toolbar is just a waste of valuable screen estate
+in a tty tool-bar-mode does not properly auto-load, and is
+already disabled anyway
+#+BEGIN_SRC emacs-lisp
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+#+END_SRC
+
+Disable the annoying bell ring
+#+BEGIN_SRC emacs-lisp
+  (setq ring-bell-function 'ignore)
+#+END_SRC
+
+The blinking cursor is nothing, but an annoyance
+#+BEGIN_SRC emacs-lisp
+  (blink-cursor-mode -1)
+#+END_SRC
+
+Reduce the frequency of garbage collection by making it happen on
+each 50MB of allocated data (the default is on every 0.76MB)
+#+BEGIN_SRC emacs-lisp
+  (setq gc-cons-threshold 50000000)
+#+END_SRC
+
+Warn when opening files bigger than 100MB
+#+BEGIN_SRC emacs-lisp
+ (setq large-file-warning-threshold 100000000)
+#+END_SRC
+
+Theme
+#+BEGIN_SRC emacs-lisp
+(use-package zenburn-theme
+  :ensure t
+  :config
+  (load-theme 'zenburn t))
+#+END_SRC
+
+* Lisp parentesis settings
+
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit
+    :ensure t
+    :config
+    (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+    ;; enable in the *scratch* buffer
+    (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+    (add-hook 'ielm-mode-hook #'paredit-mode)
+    (add-hook 'lisp-mode-hook #'paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+
+  (use-package paren
+    :config
+    (show-paren-mode +1))
+
+  (use-package rainbow-delimiters
+    :ensure t)
+
+  (use-package rainbow-mode
+    :ensure t
+    :config
+    (add-hook 'prog-mode-hook #'rainbow-mode))
+
+#+END_SRC
+
+* clojure settings
+
+#+BEGIN_SRC emacs-lisp
+  (use-package clojure-mode
+    :ensure t
+    :config
+    (add-hook 'clojure-mode-hook #'paredit-mode)
+    (add-hook 'clojure-mode-hook #'subword-mode)
+    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
+
+  (use-package cider
+    :ensure t
+    :config
+    (setq nrepl-log-messages t)
+    (add-hook 'cider-mode-hook #'eldoc-mode)
+    (add-hook 'cider-repl-mode-hook #'eldoc-mode)
+    (add-hook 'cider-repl-mode-hook #'paredit-mode)
+    (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode))
+#+END_SRC
+
+* misc
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ag
+    :ensure t)
+
+  (use-package projectile
+    :ensure t
+    :init
+    (setq projectile-completion-system 'ivy)
+    :config
+    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    (projectile-mode +1))
+#+END_SRC
