@@ -53,7 +53,9 @@ Always compile packages, and use the newest version available.
 
 ** enable y/n answers
 #+BEGIN_SRC emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
+(use-package ido-yes-or-no
+  :ensure t
+  :init (ido-yes-or-no-mode 1))
 #+END_SRC
 
 ** Disable the bell ring
