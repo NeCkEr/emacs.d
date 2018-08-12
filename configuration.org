@@ -91,6 +91,35 @@ Warn when opening files bigger than 100MB
   (delete-selection-mode t)
 #+END_SRC
 
+
+** Emacs temp files
+
+*** config changes made through the customize UI will be stored here
+#+BEGIN_SRC emacs-lisp
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+  (load custom-file))
+#+END_SRC
+*** store all backup and autosave files in the tmp dir
+#+BEGIN_SRC emacs-lisp
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+#+END_SRC
+
+** revert buffers automatically when underlying files are changed externally
+#+BEGIN_SRC emacs-lisp
+(global-auto-revert-mode t)
+#+END_SRC
+** set default text coding system to utf8
+#+BEGIN_SRC emacs-lisp
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+#+END_SRC
+
 ** =exec-path-from-shell=  ensure environment variables inside Emacs look the same as in the user's shell.
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
@@ -100,6 +129,23 @@ Warn when opening files bigger than 100MB
     (exec-path-from-shell-initialize)))
 #+END_SRC
 
+
+* org-mode settings
+** pretty bullets instead of a list of asterisks.
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :init
+  (add-hook 'org-mode-hook #'org-bullets-mode))
+#+END_SRC
+
+** instead of the usual ellipsis (...) that org displays
+#+BEGIN_SRC emacs-lisp
+(use-package unicode-fonts
+  :init
+  (unicode-fonts-setup))
+
+(setq org-ellipsis "(...)")
+#+END_SRC
 
 
 * Lisp parentesis settings
@@ -288,6 +334,8 @@ already disabled anyway
     (tool-bar-mode -1))
 #+END_SRC
 
+
+
 ** The blink text cursor
 #+BEGIN_SRC emacs-lisp
   (blink-cursor-mode -1)
@@ -319,12 +367,6 @@ already disabled anyway
   (add-hook 'org-shiftright-final-hook 'windmove-right)
   )
 #+END_SRC
-** config changes made through the customize UI will be stored here
-#+BEGIN_SRC emacs-lisp
-  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (when (file-exists-p custom-file)
-  (load custom-file))
-#+END_SRC
 ** =which-key= is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
@@ -332,4 +374,7 @@ already disabled anyway
   :config
   (which-key-mode +1))
 #+END_SRC
+
+
+
 
