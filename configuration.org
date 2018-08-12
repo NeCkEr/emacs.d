@@ -91,7 +91,6 @@ Warn when opening files bigger than 100MB
   (delete-selection-mode t)
 #+END_SRC
 
-
 ** Emacs temp files
 
 *** config changes made through the customize UI will be stored here
@@ -139,7 +138,17 @@ Warn when opening files bigger than 100MB
   (setq whitespace-line-column 80) ;; limit line length
   (setq whitespace-style '(face tabs empty trailing lines-tail)))
 #+END_SRC
+** don't use tabs to indent
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+END_SRC
 
+#+RESULTS:
+
+** Allow hash to be typed? better ways to solve this are welcome :P
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#")))
+#+END_SRC
 
 
 * org-mode settings
@@ -196,9 +205,22 @@ Warn when opening files bigger than 100MB
 
 
 * Programming languages
-
+** =web-mode= major mode for editing web templates aka HTML files embedding parts (CSS/JavaScript)
+#+BEGIN_SRC emacs-lisp
+(use-package web-mode
+  :ensure t
+  :mode ("\\.js\\'" . web-mode)
+  :config
+  (add-hook 'web-mode-hook
+          (lambda ()
+            (rainbow-mode)
+            ;; (rspec-mode)
+            (setq web-mode-markup-indent-offset 2)))
+  :init
+  (setq web-mode-content-types-alist
+	'(("jsx"  . "\\.js[x]?\\'"))))
+#+END_SRC
 ** clojure settings
-
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
     :ensure t
@@ -219,8 +241,6 @@ Warn when opening files bigger than 100MB
     (setq cider-show-error-buffer t)
     (setq cider-auto-select-error-buffer t))
 #+END_SRC
-
-
 ** emacs-lisp settings
 
 *** Allow =babel= to evaluate Emacs-lisp code.
