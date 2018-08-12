@@ -4,3 +4,5 @@ configuration.el
 elpa/
 network-security.data
 projectile-bookmarks.eld
+custom.el~
+custom.el
