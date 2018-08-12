@@ -2,15 +2,17 @@
 #+AUTHOR: BruNeX
 #+EMAIL: hello@brunex.name
 
-* Set personal information
+* Set personel information
 
 ** Who am I?
+
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "BruNeX"
         user-mail-address "hello@brunex.name")
 #+END_SRC
 
-* Configure =use-package=
+
+* =use-package= Configuration and settings
 
 #+BEGIN_SRC emacs-lisp
   (unless (package-installed-p 'use-package)
@@ -31,44 +33,35 @@ Always compile packages, and use the newest version available.
   (setq load-prefer-newer t)
 #+END_SRC
 
-* cool defaults
 
-nice scrolling
+* Emacs default settings
+
+** nice scrolling
 #+BEGIN_SRC emacs-lisp
 (setq scroll-margin 0
       scroll-conservatively 100000
       scroll-preserve-screen-position 1)
 #+END_SRC
 
-mode line settings
+** mode line settings
 #+BEGIN_SRC emacs-lisp
+(global-linum-mode)
 (line-number-mode t)
 (column-number-mode t)
 (size-indication-mode t)
 #+END_SRC
 
-enable y/n answers
+** enable y/n answers
 #+BEGIN_SRC emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-The toolbar is just a waste of valuable screen estate
-in a tty tool-bar-mode does not properly auto-load, and is
-already disabled anyway
-#+BEGIN_SRC emacs-lisp
-  (when (fboundp 'tool-bar-mode)
-    (tool-bar-mode -1))
-#+END_SRC
-
-Disable the annoying bell ring
+** Disable the bell ring
 #+BEGIN_SRC emacs-lisp
   (setq ring-bell-function 'ignore)
 #+END_SRC
 
-The blinking cursor is nothing, but an annoyance
-#+BEGIN_SRC emacs-lisp
-  (blink-cursor-mode -1)
-#+END_SRC
+** garbage collection
 
 Reduce the frequency of garbage collection by making it happen on
 each 50MB of allocated data (the default is on every 0.76MB)
@@ -76,21 +69,42 @@ each 50MB of allocated data (the default is on every 0.76MB)
   (setq gc-cons-threshold 50000000)
 #+END_SRC
 
+** warning big files
+
 Warn when opening files bigger than 100MB
 #+BEGIN_SRC emacs-lisp
  (setq large-file-warning-threshold 100000000)
 #+END_SRC
 
-Theme
+** replace buffer-menu with ibuffer
 #+BEGIN_SRC emacs-lisp
-(use-package zenburn-theme
+  (global-set-key (kbd "C-x C-b") #'ibuffer)
+#+END_SRC
+
+** Newline at end of file
+#+BEGIN_SRC emacs-lisp
+  (setq require-final-newline t)
+#+END_SRC
+
+** delete the selection with a keypress
+#+BEGIN_SRC emacs-lisp
+  (delete-selection-mode t)
+#+END_SRC
+
+** =exec-path-from-shell=  ensure environment variables inside Emacs look the same as in the user's shell.
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
   :ensure t
   :config
-  (load-theme 'zenburn t))
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize)))
 #+END_SRC
+
+
 
 * Lisp parentesis settings
 
+** =paredit= helps balance the parentesis, with slurp and barf facilities
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :ensure t
@@ -101,22 +115,31 @@ Theme
     (add-hook 'ielm-mode-hook #'paredit-mode)
     (add-hook 'lisp-mode-hook #'paredit-mode)
     (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
-
+#+END_SRC
+** =paren=
+#+BEGIN_SRC emacs-lisp
   (use-package paren
     :config
     (show-paren-mode +1))
+#+END_SRC
 
+** =rainbow-delimiters=
+#+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
     :ensure t)
-
+#+END_SRC
+** =rainbow-mode=
+#+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
     :ensure t
     :config
     (add-hook 'prog-mode-hook #'rainbow-mode))
-
 #+END_SRC
 
-* clojure settings
+
+* Programming languages
+
+** clojure settings
 
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
@@ -130,18 +153,55 @@ Theme
     :ensure t
     :config
     (setq nrepl-log-messages t)
-    (add-hook 'cider-mode-hook #'eldoc-mode)
+    (add-hook 'cider-mode-hook #'eldoc-mode) 
     (add-hook 'cider-repl-mode-hook #'eldoc-mode)
-    (add-hook 'cider-repl-mode-hook #'paredit-mode)
-    (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode))
+    (add-hook 'cider-repl-mode-hook #'paredit-mode) 
+    (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode)
+    (setq cider-repl-pop-to-buffer-on-connect t) 
+    (setq cider-show-error-buffer t)
+    (setq cider-auto-select-error-buffer t))
+
+  
+  
+ 
+    
 #+END_SRC
 
-* misc
 
+** emacs-lisp settings
+
+*** Allow =babel= to evaluate Emacs-lisp code.
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)))
+#+END_SRC
+
+*** =babel= Don't ask before evaluating code blocks.
+#+BEGIN_SRC emacs-lisp
+  (setq org-confirm-babel-evaluate nil)
+#+END_SRC
+
+*** =elisp-slime-nav=  navigation to the symbol at point
+#+BEGIN_SRC emacs-lisp
+(use-package elisp-slime-nav
+  :ensure t
+  :config
+  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+    (add-hook hook #'elisp-slime-nav-mode)))
+#+END_SRC
+
+
+* Folders, Files, Projects, Trees, Text -  utilities to search, select, move, find and stuff
+
+** =ag= Very usefull search
 #+BEGIN_SRC emacs-lisp
   (use-package ag
     :ensure t)
+#+END_SRC
 
+** =projectile= project facilities
+#+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
     :init
@@ -150,3 +210,130 @@ Theme
     (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
     (projectile-mode +1))
 #+END_SRC
+** =avy=  for jumping to visible text
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+  :ensure t
+  :bind (("M-g f" . avy-goto-line)
+         ("M-g w" . avy-goto-word-1)
+         ("M-g c" . avy-goto-char))
+  :config
+  (setq avy-background t))
+
+#+END_SRC
+** =Expand-region= increases the selected region by semantic units
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+#+END_SRC
+** =anzu=  anzu.vim query replace
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :ensure t
+  :bind (("M-%" . anzu-query-replace)
+         ("C-M-%" . anzu-query-replace-regexp))
+  :config
+  (global-anzu-mode))
+#+END_SRC
+
+** =move=text= move the current line,  if a region is marked, it will move the region instead.
+#+BEGIN_SRC emacs-lisp
+(use-package move-text
+  :ensure t
+  :bind
+  (([(meta shift up)] . move-text-up)
+   ([(meta shift down)] . move-text-down)))
+#+END_SRC
+
+** =ido=
+#+BEGIN_SRC emacs-lisp
+(use-package ido
+  :ensure t
+  :config
+  (progn
+    (setq ido-enable-flex-matching t)
+    (setq ido-everywhere t)
+    (ido-mode 1)))
+
+(use-package ido-ubiquitous
+  :ensure t
+  :init (ido-ubiquitous-mode 1))
+
+(use-package ido-yes-or-no
+  :ensure t
+  :init (ido-yes-or-no-mode 1))
+
+(use-package smex
+  :bind (("M-x" . smex))
+  :ensure t
+  :config (smex-initialize))
+#+END_SRC
+
+
+* UI Preferences
+
+** Tweak window chrome
+
+I don't usually use the menu or scroll bar, and they take up useful space.
+
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+  (when window-system
+    (scroll-bar-mode -1))
+#+END_SRC
+
+The toolbar is just a waste of valuable screen estate
+in a tty tool-bar-mode does not properly auto-load, and is
+already disabled anyway
+#+BEGIN_SRC emacs-lisp
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+#+END_SRC
+
+** The blink text cursor
+#+BEGIN_SRC emacs-lisp
+  (blink-cursor-mode -1)
+#+END_SRC
+
+** theme
+
+#+BEGIN_SRC emacs-lisp
+(use-package base16-theme
+  :ensure t
+  :init
+  (load-theme 'base16-tomorrow-night t))
+#+END_SRC
+
+** background color of the line containing point.
+#+BEGIN_SRC emacs-lisp
+  (when window-system
+    (global-hl-line-mode))
+#+END_SRC
+**  =windmove= use shift + arrow keys to switch between visible buffers
+#+BEGIN_SRC emacs-lisp
+(use-package windmove
+  :config
+  (windmove-default-keybindings)
+  ;; Make windmove work in org-mode:
+  (add-hook 'org-shiftup-final-hook 'windmove-up)
+  (add-hook 'org-shiftleft-final-hook 'windmove-left)
+  (add-hook 'org-shiftdown-final-hook 'windmove-down)
+  (add-hook 'org-shiftright-final-hook 'windmove-right)
+  )
+#+END_SRC
+** config changes made through the customize UI will be stored here
+#+BEGIN_SRC emacs-lisp
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+  (load custom-file))
+#+END_SRC
+** =which-key= is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode +1))
+#+END_SRC
+
