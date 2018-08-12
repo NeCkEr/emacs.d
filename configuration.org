@@ -128,6 +128,18 @@ Warn when opening files bigger than 100MB
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
 #+END_SRC
+** =whitespace= ensures whitespace cleanup on save
+#+BEGIN_SRC emacs-lisp
+(use-package whitespace
+  :init
+  (dolist (hook '(prog-mode-hook text-mode-hook))
+    (add-hook hook #'whitespace-mode))
+  (add-hook 'before-save-hook #'whitespace-cleanup)
+  :config
+  (setq whitespace-line-column 80) ;; limit line length
+  (setq whitespace-style '(face tabs empty trailing lines-tail)))
+#+END_SRC
+
 
 
 * org-mode settings
@@ -199,18 +211,13 @@ Warn when opening files bigger than 100MB
     :ensure t
     :config
     (setq nrepl-log-messages t)
-    (add-hook 'cider-mode-hook #'eldoc-mode) 
+    (add-hook 'cider-mode-hook #'eldoc-mode)
     (add-hook 'cider-repl-mode-hook #'eldoc-mode)
-    (add-hook 'cider-repl-mode-hook #'paredit-mode) 
+    (add-hook 'cider-repl-mode-hook #'paredit-mode)
     (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode)
-    (setq cider-repl-pop-to-buffer-on-connect t) 
+    (setq cider-repl-pop-to-buffer-on-connect t)
     (setq cider-show-error-buffer t)
     (setq cider-auto-select-error-buffer t))
-
-  
-  
- 
-    
 #+END_SRC
 
 
@@ -335,7 +342,6 @@ already disabled anyway
 #+END_SRC
 
 
-
 ** The blink text cursor
 #+BEGIN_SRC emacs-lisp
   (blink-cursor-mode -1)
@@ -376,7 +382,3 @@ already disabled anyway
   :config
   (which-key-mode +1))
 #+END_SRC
-
-
-
-
