@@ -55,7 +55,9 @@ Always compile packages, and use the newest version available.
 #+BEGIN_SRC emacs-lisp
 (use-package ido-yes-or-no
   :ensure t
-  :init (ido-yes-or-no-mode 1))
+  :config
+  (ido-yes-or-no-mode 1)
+  (fset 'yes-or-no-p 'y-or-n-p))
 #+END_SRC
 
 ** Disable the bell ring
@@ -144,8 +146,6 @@ Warn when opening files bigger than 100MB
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
 #+END_SRC
-
-#+RESULTS:
 
 ** Allow hash to be typed? better ways to solve this are welcome :P
 #+BEGIN_SRC emacs-lisp
@@ -267,7 +267,7 @@ Warn when opening files bigger than 100MB
 #+END_SRC
 
 
-* Folders, Files, Projects, Trees, Text -  utilities to search, select, move, find and stuff
+* Folders, Files, Projects, Text -  utilities to search, select, move, find and stuff
 
 ** =ag= Very usefull search
 #+BEGIN_SRC emacs-lisp
@@ -363,7 +363,6 @@ already disabled anyway
     (tool-bar-mode -1))
 #+END_SRC
 
-
 ** The blink text cursor
 #+BEGIN_SRC emacs-lisp
   (blink-cursor-mode -1)
@@ -405,6 +404,29 @@ already disabled anyway
   (which-key-mode +1))
 #+END_SRC
 
+** =all-the-icons=
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+     :demand t
+     :config
+     (use-package spaceline-all-the-icons
+     :config
+     (spaceline-all-the-icons-theme)
+     (spaceline-all-the-icons--setup-paradox)
+     (spaceline-all-the-icons--setup-git-ahead)
+     (spaceline-all-the-icons--setup-neotree))
+    )
+#+END_SRC
+
+** =neotree= A Emacs tree plugin like NerdTree for Vim.
+#+BEGIN_SRC emacs-lisp
+(use-package neotree
+  :ensure t
+  :config
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+#+END_SRC
+
+
 * Custom made util functions
 ** util function to allow shell copy paste from clipboard
 #+BEGIN_SRC emacs-lisp
@@ -426,6 +448,3 @@ already disabled anyway
 (global-set-key (kbd "C-c v") 'pbpaste)
 (global-set-key (kbd "C-c x") 'pbcut)
 #+END_SRC
-
-#+RESULTS:
-: pbcut
