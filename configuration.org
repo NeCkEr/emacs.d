@@ -238,7 +238,10 @@ Warn when opening files bigger than 100MB
     (add-hook 'clojure-mode-hook #'paredit-mode)
     (add-hook 'clojure-mode-hook #'subword-mode)
     (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-    (setq clojure-indent-style :always-indent))
+    (setq clojure-indent-style :always-indent)
+    (define-clojure-indent
+     (-> 4)
+     (->> 4)))
 
   (use-package cider
     :ensure t
