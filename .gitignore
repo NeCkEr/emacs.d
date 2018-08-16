@@ -10,5 +10,4 @@ custom.el
 ido.last
 ido.last~
 smex-items
-.#configuration.el
-.#configuration.org
+eshell

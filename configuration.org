@@ -139,9 +139,11 @@ Warn when opening files bigger than 100MB
     (add-hook hook #'whitespace-mode))
   (add-hook 'before-save-hook #'whitespace-cleanup)
   :config
-  (setq whitespace-line-column 80) ;; limit line length
+  (setq whitespace-line nil)
+  (setq whitespace-line-column 80)
   (setq whitespace-style '(face tabs empty trailing lines-tail)))
 #+END_SRC
+
 ** don't use tabs to indent
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
@@ -207,6 +209,12 @@ Warn when opening files bigger than 100MB
 
 
 * Programming languages
+** =terraform-mode= Syntax highlighting, Indentation, imenu
+#+BEGIN_SRC emacs-lisp
+  (use-package terraform-mode
+    :ensure t)
+#+END_SRC
+
 ** =web-mode= major mode for editing web templates aka HTML files embedding parts (CSS/JavaScript)
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
@@ -229,7 +237,8 @@ Warn when opening files bigger than 100MB
     :config
     (add-hook 'clojure-mode-hook #'paredit-mode)
     (add-hook 'clojure-mode-hook #'subword-mode)
-    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
+    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+    (setq clojure-indent-style :always-indent))
 
   (use-package cider
     :ensure t
@@ -243,6 +252,7 @@ Warn when opening files bigger than 100MB
     (setq cider-show-error-buffer t)
     (setq cider-auto-select-error-buffer t))
 #+END_SRC
+
 ** emacs-lisp settings
 
 *** Allow =babel= to evaluate Emacs-lisp code.
@@ -371,7 +381,6 @@ already disabled anyway
 ** theme
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package base16-theme
   :ensure t
   :init
@@ -379,10 +388,16 @@ already disabled anyway
   (load-theme 'base16-tomorrow-night t))
 #+END_SRC
 
+** =linum-mode=
+#+BEGIN_SRC emacs-lisp
+(use-package linum
+  :ensure t)
+#+END_SRC
+
 ** background color of the line containing point.
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (global-hl-line-mode))
+  (global-hl-line-mode))
 #+END_SRC
 **  =windmove= use shift + arrow keys to switch between visible buffers
 #+BEGIN_SRC emacs-lisp
@@ -430,6 +445,11 @@ already disabled anyway
 * Custom made util functions
 ** util function to allow shell copy paste from clipboard
 #+BEGIN_SRC emacs-lisp
+(defun treee ()
+  (interactive)
+  (neotree-hide)
+  (neotree))
+
 (defun pbcopy ()
   (interactive)
   (call-process-region (point) (mark) "pbcopy")
