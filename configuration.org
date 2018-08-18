@@ -280,25 +280,6 @@ Warn when opening files bigger than 100MB
 #+END_SRC
 
 
-* Terminal
-** =multi-term=
-#+BEGIN_SRC emacs-lisp
-(use-package multi-term
-  :ensure t
-  :config
-  (setq multi-term-program "/usr/local/bin/fish"))
-
-(defun bb/term-toggle-mode ()
-  "Toggles term between line mode and char mode"
-  (interactive)
-  (if (term-in-line-mode)
-      (term-char-mode)
-    (term-line-mode)))
-
-(define-key term-mode-map (kbd "C-c C-e") 'bb/term-toggle-mode)
-(define-key term-raw-map (kbd "C-c C-e") 'bb/term-toggle-mode)
-#+END_SRC
-
 * Folders, Files, Projects, Text -  utilities to search, select, move, find and stuff
 
 ** =ag= Very usefull search
@@ -489,4 +470,35 @@ already disabled anyway
 (global-set-key (kbd "C-c c") 'pbcopy)
 (global-set-key (kbd "C-c v") 'pbpaste)
 (global-set-key (kbd "C-c x") 'pbcut)
+#+END_SRC
+
+
+* Terminal
+** =multi-term=
+#+BEGIN_SRC emacs-lisp
+(use-package multi-term
+  :ensure t
+  :config
+  (setq multi-term-program "/usr/local/bin/fish"))
+
+(defun bb/term-toggle-mode ()
+  "Toggles term between line mode and char mode"
+  (interactive)
+  (if (term-in-line-mode)
+      (term-char-mode)
+    (term-line-mode)))
+
+(defun bb/term-paste (&optional string)
+  (interactive)
+  (process-send-string
+   (get-buffer-process (current-buffer))
+   (if string string (current-kill 0))))
+
+(add-hook 'term-mode-hook
+          (lambda ()
+            (define-key term-mode-map (kbd "C-c C-e") 'bb/term-toggle-mode)
+            (define-key term-raw-map (kbd "C-c C-e") 'bb/term-toggle-mode)
+            (define-key term-raw-map (kbd "C-y") 'bb/term-paste)
+            (setq yas-dont-activate t)))
+
 #+END_SRC
