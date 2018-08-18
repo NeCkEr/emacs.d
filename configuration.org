@@ -280,6 +280,15 @@ Warn when opening files bigger than 100MB
 #+END_SRC
 
 
+* Terminal
+** =multi-term=
+#+BEGIN_SRC emacs-lisp
+(use-package multi-term
+  :ensure t
+  :config
+  (setq multi-term-program "/usr/local/bin/fish")
+#+END_SRC
+
 * Folders, Files, Projects, Text -  utilities to search, select, move, find and stuff
 
 ** =ag= Very usefull search
