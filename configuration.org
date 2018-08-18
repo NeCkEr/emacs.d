@@ -496,6 +496,7 @@ already disabled anyway
 
 (add-hook 'term-mode-hook
           (lambda ()
+            (goto-address-mode)
             (define-key term-mode-map (kbd "C-c C-e") 'bb/term-toggle-mode)
             (define-key term-raw-map (kbd "C-c C-e") 'bb/term-toggle-mode)
             (define-key term-raw-map (kbd "C-y") 'bb/term-paste)
