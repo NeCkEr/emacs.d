@@ -218,6 +218,7 @@ Warn when opening files bigger than 100MB
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 #+END_SRC
+
 ** =terraform-mode= Syntax highlighting, Indentation, imenu
 #+BEGIN_SRC emacs-lisp
   (use-package terraform-mode
