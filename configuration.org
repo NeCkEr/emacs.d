@@ -295,6 +295,17 @@ Warn when opening files bigger than 100MB
 #+END_SRC
 
 
+* =magit=
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)))
+#+END_SRC
+
+#+RESULTS:
+: magit-status
+
+
 * Folders, Files, Projects, Text -  utilities to search, select, move, find and stuff
 
 ** =ag= Very usefull search
@@ -303,16 +314,7 @@ Warn when opening files bigger than 100MB
     :ensure t)
 #+END_SRC
 
-** =projectile= project facilities
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
-    :init
-    (setq projectile-completion-system 'ivy)
-    :config
-    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-    (projectile-mode +1))
-#+END_SRC
+
 ** =avy=  for jumping to visible text
 #+BEGIN_SRC emacs-lisp
 (use-package avy
@@ -367,6 +369,46 @@ Warn when opening files bigger than 100MB
   :bind (("M-x" . smex))
   :ensure t
   :config (smex-initialize))
+#+END_SRC
+
+** =Perspective= is a minor mode that provides the ability to manage different workspaces.
+#+BEGIN_SRC emacs-lisp
+(use-package ivy
+  :ensure t
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (global-set-key (kbd "<f6>") 'ivy-resume))
+
+(use-package perspective
+  :ensure t)
+
+(use-package persp-projectile
+  :ensure t
+  :config
+  (persp-mode)
+  (define-key projectile-mode-map (kbd "M-s s") 'projectile-persp-switch-project))
+#+END_SRC
+
+** =projectile= project facilities
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :init
+    (setq projectile-completion-system 'ivy)
+    :config
+    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    (projectile-mode +1))
+#+END_SRC
+
+** =swiper=
+#+BEGIN_SRC emacs-lisp
+(use-package swiper
+  :ensure t
+  :config
+  (global-set-key "\C-s" 'swiper))
 #+END_SRC
 
 
@@ -485,6 +527,48 @@ already disabled anyway
 (global-set-key (kbd "C-c c") 'pbcopy)
 (global-set-key (kbd "C-c v") 'pbpaste)
 (global-set-key (kbd "C-c x") 'pbcut)
+#+END_SRC
+
+** Usefull function to escape quotes in a string
+
+   http://ergoemacs.org/emacs/elisp_escape_quotes.html
+
+#+BEGIN_SRC emacs-lisp
+(defun xah-escape-quotes (@begin @end)
+  "Replace 「\"」 by 「\\\"」 in current line or text selection.
+See also: `xah-unescape-quotes'
+
+URL `http://ergoemacs.org/emacs/elisp_escape_quotes.html'
+Version 2017-01-11"
+  (interactive
+   (if (use-region-p)
+       (list (region-beginning) (region-end))
+     (list (line-beginning-position) (line-end-position))))
+  (save-excursion
+      (save-restriction
+        (narrow-to-region @begin @end)
+        (goto-char (point-min))
+        (while (search-forward "\"" nil t)
+          (replace-match "\\\"" "FIXEDCASE" "LITERAL")))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun xah-unescape-quotes (@begin @end)
+  "Replace  「\\\"」 by 「\"」 in current line or text selection.
+See also: `xah-escape-quotes'
+
+URL `http://ergoemacs.org/emacs/elisp_escape_quotes.html'
+Version 2017-01-11"
+  (interactive
+   (if (use-region-p)
+       (list (region-beginning) (region-end))
+     (list (line-beginning-position) (line-end-position))))
+  (save-excursion
+    (save-restriction
+      (narrow-to-region @begin @end)
+      (goto-char (point-min))
+      (while (search-forward "\\\"" nil t)
+        (replace-match "\"" "FIXEDCASE" "LITERAL")))))
 #+END_SRC
 
 
