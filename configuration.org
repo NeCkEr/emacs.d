@@ -306,6 +306,26 @@ Warn when opening files bigger than 100MB
 : magit-status
 
 
+* =Company= is a text completion framework for Emacs.
+#+BEGIN_SRC emacs-lisp
+(use-package company
+   :ensure t
+   :config
+   (progn
+     (global-company-mode)
+     (setq company-minimum-prefix-length 2)
+     (setq company-lsp-enable-snippet t)
+     (setq company-tooltip-align-annotations t)
+     (setq company-selection-wrap-around t)
+     (setq company-transformers '(company-sort-by-occurrence))
+     (define-key company-active-map (kbd "M-n") nil)
+     (define-key company-active-map (kbd "M-p") nil)
+     (define-key company-active-map (kbd "C-n") 'company-select-next)
+     (define-key company-active-map (kbd "C-p") 'company-select-previous)
+     (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)))
+#+END_SRC
+
+
 * Folders, Files, Projects, Text -  utilities to search, select, move, find and stuff
 
 ** =ag= Very usefull search
