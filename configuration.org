@@ -325,7 +325,6 @@ Warn when opening files bigger than 100MB
      (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)))
 #+END_SRC
 
-
 * Folders, Files, Projects, Text -  utilities to search, select, move, find and stuff
 
 ** =ag= Very usefull search
@@ -457,7 +456,22 @@ already disabled anyway
 #+BEGIN_SRC emacs-lisp
   (blink-cursor-mode -1)
 #+END_SRC
-
+** =Beacon= Never lose your cursor again
+#+BEGIN_SRC emacs-lisp
+(use-package beacon
+ :ensure t
+ :config
+ (progn
+   (beacon-mode 1)
+   (setq beacon-size 10)
+   (setq beacon-color "#ca6768")
+   (setq beacon-blink-duration 0.2)
+   (setq beacon-blink-when-window-scrolls t)
+   (setq beacon-blink-when-window-changes t)
+   (setq beacon-blink-when-point-moves-horizontally 20)
+   (setq beacon-blink-when-point-moves-vertically 10)))
+#+END_SRC
+202 103 104
 ** theme
 
 #+BEGIN_SRC emacs-lisp
