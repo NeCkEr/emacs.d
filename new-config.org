@@ -264,7 +264,7 @@ This function is intended for use with `ivy-ignore-buffers'."
 ;;; https://github.com/Yevgnen/ivy-rich
 (use-package ivy-rich
   :straight t
-  :requires (counsel)
+  :after (ivy counsel)
   :config
   (setq
    ivy-rich-path-style 'abbrev
