@@ -150,7 +150,6 @@
 ** =doom-themes=
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package doom-themes
   :straight t
   :requires (all-the-icons)
@@ -236,8 +235,6 @@
 ;;; https://github.com/abo-abo/swiper/wiki/Hiding-dired-buffers
 ;; hide dired buffers in ivy-switch-buffer
 (defun idc/ignore-dired-buffers (str)
-  "Return non-nil if STR names a Dired buffer.
-This function is intended for use with `ivy-ignore-buffers'."
   (let ((buf (get-buffer str)))
     (and buf (eq (buffer-local-value 'major-mode buf) 'dired-mode))))
 
@@ -418,6 +415,12 @@ This function is intended for use with `ivy-ignore-buffers'."
   :straight t
   :config
   (hlinum-activate))
+
+(use-package hl-line
+  :straight nil
+  :custom-face (hl-line ((t (:extend t))))
+  :hook (after-init . global-hl-line-mode))
+
 #+END_SRC
 
 ** =beacon=
@@ -562,27 +565,25 @@ This function is intended for use with `ivy-ignore-buffers'."
 ** =org=
    straight.el relies on internal kludge to build org-mode
 #+BEGIN_SRC emacs-lisp
-(use-package org
-  :straight org-plus-contrib
+
+(use-package org-plus-contrib
+  :straight t
   :mode (("\\.org$" . org-mode))
   :bind
   (("C-c l" . org-store-link)
-   ("C-c a" . org-agenda))
+  ("C-c a" . org-agenda))
   :config
-  (setq org-directory "~/Code/org"
-        org-default-notes-file (concat org-directory "/todo.org"))
-  (progn
-   (org-babel-do-load-languages
-    'org-babel-load-languages
-    '((emacs-lisp . t)
-      (python . t)
-      (ruby . t)
-      (shell . t)
-      (sql . t)
-      )))
-   ;; (setq org-export-with-sub-superscripts (quote {}))
-   ;; (setq (org-src-fontify-natively t))
-   )
+    (setq org-directory "~/Code/org"
+    org-default-notes-file (concat org-directory "/brunex.org"))
+    (progn
+    (org-babel-do-load-languages
+      'org-babel-load-languages
+        '((emacs-lisp . t)
+          (python . t)
+          (ruby . t)
+          (shell . t)
+          (sql . t)
+        ))))
 
 #+END_SRC
 ** =org-bullets=

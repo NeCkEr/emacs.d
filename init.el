@@ -12,6 +12,10 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(straight-use-package 'org-plus-contrib)
+
+(require 'org)
+
 (straight-use-package 'use-package)
 
 (org-babel-load-file "~/.emacs.d/new-config.org")
