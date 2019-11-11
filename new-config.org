@@ -40,6 +40,7 @@
 - [[#languages][Languages]]
   - [[#markdown-mode][=markdown-mode=]]
   - [[#terraform-mode][=terraform-mode=]]
+  - [[#fish-mode][=fish-mode=]]
   - [[#clojure][Clojure]]
 
 * Settings
@@ -585,7 +586,9 @@
           (sql . t)
         ))))
 
-#+END_SRC
+(require 'org-tempo)
+#+end_src
+
 ** =org-bullets=
    Pretty bullets instead of a list of asterisks.
 #+BEGIN_SRC emacs-lisp
@@ -660,6 +663,13 @@
   :straight t)
 #+END_SRC
 
+** =fish-mode=
+#+BEGIN_SRC emacs-lisp
+(use-package fish-mode
+  :straight t
+  :config
+  (add-hook 'fish-mode-hook #'linum-mode))
+#+END_SRC
 ** Clojure
 *** =clojure-mode=
 #+BEGIN_SRC emacs-lisp
