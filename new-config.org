@@ -3,7 +3,7 @@
   - [[#-hack][`#` hack]]
   - [[#emacs-default-settings][emacs default settings]]
   - [[#el-patch][=el-patch=]]
-  - [[#falt-scroll][=falt-scroll=]]
+  - [[#fast-scroll][=fast-scroll=]]
   - [[#exec-path-from-shell][=exec-path-from-shell=]]
 - [[#ui][UI]]
   - [[#all-the-icons][=all-the-icons=]]
@@ -20,11 +20,14 @@
   - [[#expand][=expand=]]
   - [[#whitespace][=whitespace=]]
   - [[#fast-croll][=fast-croll=]]
+  - [[#multi-cursors][=multi-cursors=]]
+  - [[#dont-use-tabs-to-indent][don't use tabs to indent]]
 - [[#tools][Tools]]
   - [[#magit][=magit=]]
   - [[#projectile][=projectile=]]
   - [[#ag][=ag=]]
   - [[#windmove][=windmove=]]
+  - [[#buffer-move][=buffer-move=]]
 - [[#org-mode][Org-mode]]
   - [[#org][=org=]]
   - [[#org-bullets][=org-bullets=]]
@@ -35,6 +38,8 @@
   - [[#rainbow-delimiters][=rainbow-delimiters=]]
   - [[#rainbow-mode][=rainbow-mode=]]
 - [[#languages][Languages]]
+  - [[#markdown-mode][=markdown-mode=]]
+  - [[#terraform-mode][=terraform-mode=]]
   - [[#clojure][Clojure]]
 
 * Settings
@@ -94,12 +99,21 @@
 (global-auto-revert-mode t)
 #+END_SRC
 
+*** =ido-yes-or-no=
+    enable y/n answers
+#+BEGIN_SRC emacs-lisp
+(use-package ido-yes-or-no
+  :straight t
+  :config
+  (ido-yes-or-no-mode 1)
+  (fset 'yes-or-no-p 'y-or-n-p))
+#+END_SRC
 ** =el-patch=
 #+BEGIN_SRC emacs-lisp
 (use-package el-patch
   :straight t)
 #+END_SRC
-** =falt-scroll=
+** =fast-scroll=
 #+BEGIN_SRC emacs-lisp
 (use-package fast-scroll
   :straight (fast-scroll :type git :host github :repo "ahungry/fast-scroll")
@@ -136,6 +150,7 @@
 ** =doom-themes=
 
 #+BEGIN_SRC emacs-lisp
+
 (use-package doom-themes
   :straight t
   :requires (all-the-icons)
@@ -143,8 +158,8 @@
   (setq doom-themes-enable-bold t
 	doom-themes-enable-italic t)
   ;; (load-theme 'doom-one-light t)
-  (load-theme 'doom-tomorrow-night t)
-  ;; (load-theme 'doom-one t)
+  ;; (load-theme 'doom-tomorrow-night t)
+  (load-theme 'doom-one t)
   (doom-themes-visual-bell-config)
   (doom-themes-treemacs-config)
   ;;(doom-themes-org-config)
@@ -355,10 +370,44 @@ This function is intended for use with `ivy-ignore-buffers'."
 * Term
 ** =multi-term=
 #+BEGIN_SRC emacs-lisp
+(defun bb/term-toggle-mode ()
+  "Toggles term between line mode and char mode"
+  (interactive)
+  (if (term-in-line-mode)
+      (term-char-mode)
+    (term-line-mode)))
+
+(defun bb/term-paste (&optional string)
+  (interactive)
+  (process-send-string
+   (get-buffer-process (current-buffer))
+   (if string string (current-kill 0))))
+
 (use-package multi-term
   :straight t
   :config
-  (setq multi-term-program "/usr/local/bin/fish"))
+  (setq multi-term-program "/usr/local/bin/fish")
+  (setq term-bind-key-alist
+    (list
+    (cons "C-c C-c" 'term-interrupt-subjob)
+    (cons "C-p"  'term-send-raw)
+    (cons "C-n"  'term-send-raw)
+    (cons "C-a"  'term-send-raw)
+    (cons "C-e"  'term-send-raw)
+    (cons "M-b"  'term-send-backward-word)
+    (cons "M-f"  'term-send-forward-word)
+    (cons "M-d"  'term-send-forward-kill-word)
+    (cons "C-k"  'term-send-raw)))
+  (add-hook 'term-mode-hook
+          (lambda ()
+            (setq show-trailing-whitespace nil)
+            (define-key term-mode-map (kbd "C-c C-e") 'bb/term-toggle-mode)
+            (define-key term-raw-map (kbd "C-c C-e") 'bb/term-toggle-mode)
+            (define-key term-raw-map (kbd "C-y") 'bb/term-paste)
+            (define-key term-raw-map (kbd "<M-backspace>") 'term-send-backward-kill-word)
+            (define-key term-raw-map (kbd "M-[") 'multi-term-prev)
+            (define-key term-raw-map (kbd "M-]") 'multi-term-next)
+            )))
 #+END_SRC
 
 
@@ -420,6 +469,26 @@ This function is intended for use with `ivy-ignore-buffers'."
   (fast-scroll-mode 1))
 #+END_SRC
 
+** =multi-cursors=
+#+BEGIN_SRC emacs-lisp
+;; multiple cursors
+(use-package multiple-cursors
+  :straight t
+  :config
+  (global-set-key (kbd "C-c C-c") 'mc/edit-lines)
+  (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
+  (global-set-key (kbd "C->") 'mc/skip-to-next-like-this)
+  (global-set-key (kbd "C-c C-/") 'mc/unmark-next-like-this))
+
+#+END_SRC
+
+** don't use tabs to indent
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+
 
 * Tools
 ** =magit=
@@ -476,6 +545,19 @@ This function is intended for use with `ivy-ignore-buffers'."
   (add-hook 'org-shiftdown-final-hook 'windmove-down)
   (add-hook 'org-shiftright-final-hook 'windmove-right))
 #+END_SRC
+
+** =buffer-move=
+#+BEGIN_SRC emacs-lisp
+(use-package buffer-move
+  :straight t
+  :config
+  (global-set-key (kbd "<C-M-up>")     'buf-move-up)
+  (global-set-key (kbd "<C-M-down>")   'buf-move-down)
+  (global-set-key (kbd "<C-M-left>")   'buf-move-left)
+  (global-set-key (kbd "<C-M-right>")  'buf-move-right))
+#+END_SRC
+
+
 * Org-mode
 ** =org=
    straight.el relies on internal kludge to build org-mode
@@ -487,18 +569,19 @@ This function is intended for use with `ivy-ignore-buffers'."
   (("C-c l" . org-store-link)
    ("C-c a" . org-agenda))
   :config
-  (setq org-directory "~/.org-files"
+  (setq org-directory "~/Code/org"
         org-default-notes-file (concat org-directory "/todo.org"))
   (progn
    (org-babel-do-load-languages
     'org-babel-load-languages
-    '((python . t)
+    '((emacs-lisp . t)
+      (python . t)
       (ruby . t)
       (shell . t)
       (sql . t)
       )))
    ;; (setq org-export-with-sub-superscripts (quote {}))
-   ;; (setq (org-src-fontify-natively t)
+   ;; (setq (org-src-fontify-natively t))
    )
 
 #+END_SRC
@@ -558,6 +641,24 @@ This function is intended for use with `ivy-ignore-buffers'."
 
 
 * Languages
+** =markdown-mode=
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :straight t
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown")
+  :config
+  (add-hook 'markdown-mode-hook #'linum-mode))
+
+#+END_SRC
+** =terraform-mode=
+#+BEGIN_SRC emacs-lisp
+(use-package terraform-mode
+  :straight t)
+#+END_SRC
+
 ** Clojure
 *** =clojure-mode=
 #+BEGIN_SRC emacs-lisp
