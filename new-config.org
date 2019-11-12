@@ -289,6 +289,13 @@
   (ivy-rich-mode 1))
 #+END_SRC
 
+*** =swiper=
+    #+begin_src emacs-lisp
+    (use-package swiper
+      :straight t
+      :config
+      (global-set-key "\C-s" 'swiper))
+    #+end_src
 ** =treemacs=
 #+BEGIN_SRC emacs-lisp
 (use-package treemacs
