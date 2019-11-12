@@ -24,6 +24,7 @@
   - [[#dont-use-tabs-to-indent][don't use tabs to indent]]
 - [[#tools][Tools]]
   - [[#magit][=magit=]]
+  - [[#git-link][=git-link=]]
   - [[#projectile][=projectile=]]
   - [[#ag][=ag=]]
   - [[#windmove][=windmove=]]
@@ -496,7 +497,6 @@
 
 * Tools
 ** =magit=
-
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :straight t
@@ -516,6 +516,12 @@
   (advice-add #'magit-todos-mode :around #'doom-shut-up-a))
 #+END_SRC
 
+** =git-link=
+   #+begin_src emacs-lisp
+   (use-package git-link
+   :straight t
+   :bind (("C-c C-g" . git-link)))
+   #+end_src
 ** =projectile=
 #+BEGIN_SRC emacs-lisp
 ;; https://github.com/bbatsov/projectile
